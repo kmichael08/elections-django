@@ -18,8 +18,8 @@ class Candidate(models.Model):
     surname = models.CharField(max_length=100)
     second_name = models.CharField(max_length=120, null=True)
 
-    def __str__(self):
-        return self.name + self.second_name + self.surname
+    def str(self):
+        return self.name + ' ' + self.second_name + ' ' + self.surname
 
 class Unit(models.Model):
     type = models.CharField(max_length=50)

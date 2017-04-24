@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title> Wybory prezydenckie 2000 </title>
+
+    {% block importy %}
+
+    {% endblock %}
+
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'polska/style.css' %}" />
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable(
+            {{ diagram|safe }}
+        );
+
+        var options = {
+          title: 'Wyniki wyborów',
+          sliceVisibilityThreshold: .0
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+</head>
+<body>
+
+    <div>
+        <ul class="topnav">
+            {% for ancestor, link in ancestors %}
+                <li> <a href=/polska/{{ link }}> {{ ancestor.name }} </a> </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        <h2>
+            Wyniki wyborów
+        </h2>
+        <table class = "votes">
+            <tr>
+                <th> Kandydat </th>
+                <th> Liczba głosów</th>
+                <th> Procent głosów </th>
+            </tr>
+            {% for cand, votes, per in res_dict %}
+                <tr>
+                    <td> {{ cand.str }}  </td>
+                    <td> {{ votes }} </td>
+                    <td> {{ per|floatformat:-2 }} </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+
+   <div>
+        <h2> Ogólne statystyki </h2>
+        <table class = "votes">
+            {% for rubryka, wartosc in ogolne.items %}
+                {% if rubryka == 'Frekwencja' %}
+                    <tr>
+                        <td> {{ rubryka }} </td>
+                        <td> {{ wartosc|floatformat:-2 }} </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td> {{ rubryka }} </td>
+                        <td> {{ wartosc|floatformat }} </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="subunits">
+        <ul>
+            {% for subunit, link in subunits %}
+                <li>
+                    <a href=/polska/{{ link }}> {{ subunit.name }} </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+
+</body>
+</html>
