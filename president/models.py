@@ -13,3 +13,27 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
 
+class Candidate(models.Model):
+    name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100)
+
+class Unit(models.Model):
+    type = models.CharField(max_length=50)
+    name = models.CharField(max_length=300)
+    short_name = models.CharField(max_length=100)
+
+class Information(models.Model):
+    name = models.CharField(max_length=150)
+
+class Result(models.Model):
+    id_cand = models.ForeignKey(Candidate)
+    id_information = models.ForeignKey(Information)
+    id_unit = models.ForeignKey(Unit)
+
+class Statistics(models.Model):
+    id_information = models.ForeignKey(Information)
+    id_unit = models.ForeignKey(Unit)
+
+class Subunit(models.Model):
+    id_unit = models.ForeignKey(Unit, related_name='unit')
+    id_subunit = models.ForeignKey(Unit, related_name='subunit')
