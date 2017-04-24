@@ -16,6 +16,10 @@ class Choice(models.Model):
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
+    second_name = models.CharField(max_length=120, null=True)
+
+    def __str__(self):
+        return self.name + self.second_name + self.surname
 
 class Unit(models.Model):
     type = models.CharField(max_length=50)
@@ -27,12 +31,13 @@ class Information(models.Model):
 
 class Result(models.Model):
     id_cand = models.ForeignKey(Candidate)
-    id_information = models.ForeignKey(Information)
     id_unit = models.ForeignKey(Unit)
+    value = models.IntegerField()
 
 class Statistics(models.Model):
     id_information = models.ForeignKey(Information)
     id_unit = models.ForeignKey(Unit)
+    value = models.FloatField()
 
 class Subunit(models.Model):
     id_unit = models.ForeignKey(Unit, related_name='unit')
