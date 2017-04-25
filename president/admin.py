@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Question
 # Register your models here.
+from .models import Result
 
-admin.site.register(Question)
+class ResultAdmin(admin.ModelAdmin):
+    list_display = ('id_cand', 'id_unit')
+    list_filter = ['id_cand']
+    search_fields = ['id_unit__type', 'id_unit__name']
+
+admin.site.register(Result, ResultAdmin)

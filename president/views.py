@@ -1,8 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.template import loader
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
+import re
 # Create your views here.
 
 def get_parent(unit):
@@ -28,10 +30,12 @@ def get_unit(request, name, typ):
         typ = 'województwo'
     if typ == 'obwod':
         typ = 'obwód'
-    print(name, typ)
-    template = loader.get_template('unit.html')
+
+    name = re.sub('_', ' ', name)
+    template = loader.get_template('president/unit.html')
     candidates = Candidate.objects.all()
-    jednostka = Unit.objects.get(short_name=name, type=typ)
+    jednostka = get_object_or_404(Unit, short_name=name, type=typ)
+
     rubryki = Information.objects.values_list('name', flat=True)
     stats = [item.value for item in Statistics.objects.filter(id_unit_id=jednostka)]
     ogolne = dict(zip(rubryki, stats))
@@ -41,26 +45,18 @@ def get_unit(request, name, typ):
 
     subunits = [Unit.objects.get(id=unit.id_subunit_id) for unit in Subunit.objects.filter(id_unit_id=jednostka)]
     links = [subunit.type + '/' + subunit.short_name for subunit in subunits]
+    links = [re.sub(' ', '_', item) for item in links]
     subunits = zip(subunits, links)
 
     ancestors = get_ancestors(jednostka)
     ancestors.reverse()
-    menu_links = [unit.type + '/' + unit.short_name for unit in ancestors]
-    ancestors = zip(ancestors, menu_links)
+    menu_links = [unit.type + '/' + unit.short_name for unit in ancestors ]
+    menu_links = [re.sub(' ', '_', item) for item in menu_links]
 
-    print(ancestors)
+    ancestors = zip(ancestors, menu_links)
     return HttpResponse(template.render({'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors }))
 
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
 
-def detail(request, question_id):
-    return HttpResponse("You're looking at question %s." %question_id)
-
-def results(request, question_id):
-    response = "You're loking at the results of the question %s."
-    return HttpResponse(response % question_id)
-
-def vote(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
 
