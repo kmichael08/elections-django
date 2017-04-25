@@ -36,3 +36,6 @@ class Statistics(models.Model):
 class Subunit(models.Model):
     id_unit = models.ForeignKey(Unit, related_name='unit')
     id_subunit = models.ForeignKey(Unit, related_name='subunit')
+
+class Document(models.Model):
+    docfile = models.FileField(upload_to='downloads')

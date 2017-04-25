@@ -1,10 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 import re
+from president.models import Document
+from president.forms import DocumentForm
+from django.core.urlresolvers import reverse
 # Create your views here.
 
 def get_parent(unit):
@@ -60,3 +63,17 @@ def index(request):
     return get_unit(request, 'Polska', 'kraj')
 
 
+def lista(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            newdoc = Document(docfile=request.FILES['docfile'])
+            newdoc.save()
+
+            return HttpResponseRedirect(reverse('list'))
+    else:
+        form = DocumentForm()
+
+    documents = Document.objects.all()
+
+    return render(request, 'president/list.html', {'documents': documents, 'form': form})
