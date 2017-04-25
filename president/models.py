@@ -1,4 +1,5 @@
 from django.db import models
+import os
 
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
@@ -11,12 +12,19 @@ class Candidate(models.Model):
     def __str__(self):
         return self.str()
 
+def update_filename(instance, filename):
+    path = '/polska/'
+    format = instance.type + '_' + instance.short_name
+    return os.path.join(path, format)
+
 class Unit(models.Model):
     type = models.CharField(max_length=50)
     name = models.CharField(max_length=300)
     short_name = models.CharField(max_length=100)
     def __str__(self):
         return self.type + ' ' + self.name
+    result_file = models.FileField(upload_to=update_filename, null=True)
+
 
 class Information(models.Model):
     name = models.CharField(max_length=150)

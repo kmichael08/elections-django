@@ -57,23 +57,12 @@ def get_unit(request, name, typ):
     menu_links = [re.sub(' ', '_', item) for item in menu_links]
 
     ancestors = zip(ancestors, menu_links)
-    return HttpResponse(template.render({'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors }))
+
+    pdf_file = str(jednostka.result_file)
+
+    return HttpResponse(template.render({'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
+                                         'results_pdf' : pdf_file}))
 
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
 
-
-def lista(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            newdoc = Document(docfile=request.FILES['docfile'])
-            newdoc.save()
-
-            return HttpResponseRedirect(reverse('list'))
-    else:
-        form = DocumentForm()
-
-    documents = Document.objects.all()
-
-    return render(request, 'president/list.html', {'documents': documents, 'form': form})
