@@ -45,9 +45,13 @@
         </ul>
     </div>
 
+    {% if results_pdf != '' %}
     <div>
-        <a href={{ results_pdf }}> Wyniki w obwodzie </a>
+    <h2>
+        <a href={{ results_pdf }}> Protokół z wynikami obwodu </a>
+    </h2>
     </div>
+    {% endif %}
 
     <div>
         <h2>

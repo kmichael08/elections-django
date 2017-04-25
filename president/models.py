@@ -1,5 +1,5 @@
 from django.db import models
-import os
+from elections.settings import MEDIA_ROOT
 
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
@@ -13,9 +13,8 @@ class Candidate(models.Model):
         return self.str()
 
 def update_filename(instance, filename):
-    path = '/polska/'
     format = instance.type + '_' + instance.short_name
-    return os.path.join(path, format)
+    return format
 
 class Unit(models.Model):
     type = models.CharField(max_length=50)
@@ -46,4 +45,4 @@ class Subunit(models.Model):
     id_subunit = models.ForeignKey(Unit, related_name='subunit')
 
 class Document(models.Model):
-    docfile = models.FileField(upload_to='downloads')
+    docfile = models.FileField(upload_to=MEDIA_ROOT)
