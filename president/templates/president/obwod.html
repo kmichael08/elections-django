@@ -1,0 +1,22 @@
+{% extends "president/unit.html" %}
+{% block pdfwyniki %}
+
+{% if results_pdf != '' %}
+    <div>
+    <h2>
+        <a href={{ results_pdf }}> Protokół z wynikami obwodu </a>
+    </h2>
+    </div>
+{% else %}
+    {% if user.is_authenticated %}
+    <form action="upload_pdf/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="pdf_obwod" value="wgraj plik"/>
+    </p>
+
+    <p><input type="submit" value="Upload"/> </p>
+    </form>
+    {% endif %}
+
+{% endif %}
+{% endblock %}

@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <title> Wybory prezydenckie 2000 </title>
 
-    {% block importy %}
-
-    {% endblock %}
-
     {% load static %}
 
     <link rel="stylesheet" type="text/css" href="{% static 'polska/style.css' %}" />
@@ -37,11 +33,7 @@
 </head>
 <body>
     {% if user.is_authenticated %}
-        <p> Zalogowany {{ user.username }}</p>
-        <form action="/polska/logout/">
-            {% csrf_token %}
-            <input type="submit" value="Wyloguj!"/>
-        </form>
+        <p> Zalogowany {{ user.username }} <a href="/polska/logout/"> Wyloguj! </a> </p>
     {% endif %}
 
     <div>
@@ -73,13 +65,10 @@
     </div>
     {% endif %}
 
-    {% if results_pdf != '' %}
-    <div>
-    <h2>
-        <a href={{ results_pdf }}> Protokół z wynikami obwodu </a>
-    </h2>
-    </div>
-    {% endif %}
+    {% block pdfwyniki %}
+
+    {% endblock %}
+
 
     <div>
         <h2>

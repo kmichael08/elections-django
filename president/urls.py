@@ -10,6 +10,8 @@ urlpatterns = [
 
     url(r'^logout', views.logout, name='logout'),
 
+    url(r'^obwód/(?P<name>[ 0-9A-Zążęćńśół_a-z-]+)/upload_pdf/$', views.upload_pdf, name='upload_pdf'),
+
     url(r'^search/$', views.search, name='search'),
 
     # ex: /polska/media/obwód_2608053

@@ -3,11 +3,13 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, reverse
 import re
 from collections import OrderedDict
 from elections.settings import MEDIA_ROOT
 from django.contrib.auth import authenticate, login, logout
+from president.forms import DocumentForm
+from president.models import Document
 # Create your views here.
 
 def get_parent(unit):
@@ -35,7 +37,6 @@ def get_unit(request, name, typ):
         typ = 'obwód'
 
     name = re.sub('_', ' ', name)
-    template = loader.get_template('president/unit.html')
     candidates = Candidate.objects.all()
     jednostka = get_object_or_404(Unit, short_name=name, type=typ)
 
@@ -63,7 +64,9 @@ def get_unit(request, name, typ):
     except ValueError:
         pdf_file = ''
 
-    return render(request, 'president/unit.html', {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
+    template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
+
+    return render(request, template, {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
                                          'results_pdf' : pdf_file})
 
 def index(request):
@@ -86,10 +89,26 @@ def django_login(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('/polska/')
+    print('wylogowano')
+    return HttpResponseRedirect('polska/')
 
 def search(request):
     gmina = request.POST['gmina']
     successful = len(gmina) > 2
     gminy = Unit.objects.filter(type='gmina', name__contains=gmina)
     return render(request, 'president/lista_gmin.html', {'gminy':gminy, 'success' : successful})
+
+def upload_pdf(request, name):
+    # Handle file upload
+    pdf_file = request.FILES['pdf_obwod']
+
+    unit = Unit.objects.get(type='obwód', short_name=name)
+    unit.result_file='obwód_' + name
+    unit.save()
+
+    with open(MEDIA_ROOT + '/' + 'obwód_' + name , 'wb+') as destination:
+        for chunk in pdf_file.chunks():
+            destination.write(chunk)
+
+    print(request.path)
+    return redirect('/polska/obwód/' + name)
