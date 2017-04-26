@@ -36,6 +36,13 @@
 
 </head>
 <body>
+    {% if user.is_authenticated %}
+        <p> Zalogowany {{ user.username }}</p>
+        <form action="/polska/logout/">
+            {% csrf_token %}
+            <input type="submit" value="Wyloguj!"/>
+        </form>
+    {% endif %}
 
     <div>
         <ul class="topnav">
@@ -44,6 +51,27 @@
             {% endfor %}
         </ul>
     </div>
+
+    <div>
+        <h2> Wyszukiwarka gmin </h2>
+        <form action="/polska/search/"  method="post">
+            {% csrf_token %}
+            <input type="text" name="gmina" value="podaj gminę"/>
+            <input type="submit" value="Wyszukaj!"/>
+        </form>
+    </div>
+
+    {% if not user.is_authenticated %}
+    <div>
+        <h2> Logowanie </h2>
+        <form action="/polska/login/" method="post">
+            {% csrf_token %}
+            <input type="text" name="username" value="Podaj login"/>
+            <input type="password" name="password" value="Podaj hasło"/>
+            <input type="submit" value="Zaloguj!"/>
+        </form>
+    </div>
+    {% endif %}
 
     {% if results_pdf != '' %}
     <div>

@@ -3,10 +3,11 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 import re
 from collections import OrderedDict
 from elections.settings import MEDIA_ROOT
+from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
 def get_parent(unit):
@@ -62,8 +63,8 @@ def get_unit(request, name, typ):
     except ValueError:
         pdf_file = ''
 
-    return HttpResponse(template.render({'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
-                                         'results_pdf' : pdf_file}))
+    return render(request, 'president/unit.html', {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
+                                         'results_pdf' : pdf_file})
 
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
@@ -71,3 +72,24 @@ def index(request):
 def get_pdf(request, filename):
     pdf_file = open(MEDIA_ROOT + filename, 'rb').read()
     return HttpResponse(pdf_file, content_type='application/pdf')
+
+def django_login(request):
+    print(request.POST)
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return redirect('/polska/')
+    else:
+        return redirect('/polska/')
+
+def logout_view(request):
+    logout(request)
+    return redirect('/polska/')
+
+def search(request):
+    gmina = request.POST['gmina']
+    successful = len(gmina) > 2
+    gminy = Unit.objects.filter(type='gmina', name__contains=gmina)
+    return render(request, 'president/lista_gmin.html', {'gminy':gminy, 'success' : successful})

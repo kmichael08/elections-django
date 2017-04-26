@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Wyszukiwarka gmin </title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'polska/style.css' %}" />
+
+</head>
+<body>
+{% if gminy and success %}
+    <div class="subunits">
+        <ul>
+            {% for gmina in gminy %}
+                <li><a href=/polska/gmina/{{ gmina.short_name }}> {{ gmina.name }} </a> </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    Brak gmin pasujących do zapytania lub za krótkie zapytanie!
+{% endif %}
+</body>
+</html>

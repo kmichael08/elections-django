@@ -6,6 +6,12 @@ urlpatterns = [
     # ex: /polska
     url(r'^$', views.index, name='index'),
 
+    url(r'^login/', views.django_login, name='django_login'),
+
+    url(r'^logout', views.logout, name='logout'),
+
+    url(r'^search/$', views.search, name='search'),
+
     # ex: /polska/media/obwód_2608053
     url(r'^media/(?P<filename>[ _ążźśęćńłó0-9A-Za-z-]+)/$', views.get_pdf, name='get_pdf'),
 
