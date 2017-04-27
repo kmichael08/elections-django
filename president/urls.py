@@ -8,9 +8,11 @@ urlpatterns = [
 
     url(r'^login/', views.django_login, name='django_login'),
 
-    url(r'^logout', views.logout, name='logout'),
+    url(r'^logout/', views.logout, name='logout'),
 
     url(r'^obwód/(?P<name>[ 0-9A-Zążęćńśół_a-z-]+)/upload_pdf/$', views.upload_pdf, name='upload_pdf'),
+
+    url(r'^obwód/(?P<name>[ 0-9A-Zążęćńśół_a-z-]+)/edit_votes/$', views.edit_votes, name='edit_votes'),
 
     url(r'^search/$', views.search, name='search'),
 

@@ -1,16 +1,11 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.template import loader
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404, render, redirect, reverse
+from django.shortcuts import get_object_or_404, render, redirect
 import re
 from collections import OrderedDict
 from elections.settings import MEDIA_ROOT
 from django.contrib.auth import authenticate, login, logout
-from president.forms import DocumentForm
-from president.models import Document
-# Create your views here.
 
 def get_parent(unit):
     try:
@@ -67,7 +62,7 @@ def get_unit(request, name, typ):
     template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
 
     return render(request, template, {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
-                                         'results_pdf' : pdf_file})
+                                         'results_pdf' : pdf_file, 'kandydaci':candidates})
 
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
@@ -89,8 +84,7 @@ def django_login(request):
 
 def logout_view(request):
     logout(request)
-    print('wylogowano')
-    return HttpResponseRedirect('polska/')
+    return HttpResponseRedirect('/polska/')
 
 def search(request):
     gmina = request.POST['gmina']
@@ -112,3 +106,13 @@ def upload_pdf(request, name):
 
     print(request.path)
     return redirect('/polska/obwód/' + name)
+
+def edit_votes(request, name):
+    print(request.POST)
+    cand = request.POST['kandydat']
+    print(cand, name)
+    res = Result.objects.get(id_unit__short_name=name, id_cand_id=cand)
+    res.value = request.POST['votes']
+    res.save()
+    return redirect('/polska/obwód/' + name)
+

@@ -1,21 +1,42 @@
 {% extends "president/unit.html" %}
 {% block pdfwyniki %}
 
+{% if user.is_authenticated %}
+<div>
+    <h2> Edytuj liczbę głosów </h2>
+    <form action="edit_votes/" method="post">
+        {% csrf_token %}
+        <input type="number" name="votes"/>
+        <select name="kandydat">
+            {% for cand in kandydaci %}
+                <option value={{ cand.id }}> {{ cand }} </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Zmien"/>
+    </form>
+</div>
+{% endif %}
+
 {% if results_pdf != '' %}
+
     <div>
     <h2>
         <a href={{ results_pdf }}> Protokół z wynikami obwodu </a>
     </h2>
     </div>
 {% else %}
-    {% if user.is_authenticated %}
-    <form action="upload_pdf/" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="pdf_obwod" value="wgraj plik"/>
-    </p>
 
-    <p><input type="submit" value="Upload"/> </p>
-    </form>
+    {% if user.is_authenticated %}
+
+    <div>
+        <h2> Zuploaduj plik z wynikami. </h2>
+        <form action="upload_pdf/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="pdf_obwod" value="wgraj plik"/>
+
+            <p><input type="submit" value="Upload"/> 
+        </form>
+    </div>
     {% endif %}
 
 {% endif %}
