@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, render, redirect
@@ -7,12 +7,14 @@ from collections import OrderedDict
 from elections.settings import MEDIA_ROOT
 from django.contrib.auth import authenticate, login, logout
 
+
 def get_parent(unit):
     try:
         return Unit.objects.get(id=Subunit.objects.get(id_subunit_id=unit).id_unit_id)
     except ObjectDoesNotExist:
         return None
 
+""""""
 def get_ancestors(unit):
     anc = [unit]
     while True:
@@ -24,13 +26,6 @@ def get_ancestors(unit):
     return anc
 
 def get_unit(request, name, typ):
-    if typ == 'okreg':
-        typ = 'okręg'
-    if typ == 'wojewodztwo':
-        typ = 'województwo'
-    if typ == 'obwod':
-        typ = 'obwód'
-
     name = re.sub('_', ' ', name)
     candidates = Candidate.objects.all()
     jednostka = get_object_or_404(Unit, short_name=name, type=typ)
@@ -49,6 +44,7 @@ def get_unit(request, name, typ):
 
     ancestors = get_ancestors(jednostka)
     ancestors.reverse()
+
     menu_links = [unit.type + '/' + unit.short_name for unit in ancestors ]
     menu_links = [re.sub(' ', '_', item) for item in menu_links]
 
@@ -59,10 +55,14 @@ def get_unit(request, name, typ):
     except ValueError:
         pdf_file = ''
 
+    diagram = [['kandydat', 'głosy']]
+    for cand, votes, percentage in res_dict:
+        diagram.append([cand.str(), votes])
+
     template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
 
     return render(request, template, {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
-                                         'results_pdf' : pdf_file, 'kandydaci':candidates})
+                                         'results_pdf' : pdf_file, 'kandydaci':candidates, 'diagram': diagram})
 
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
