@@ -7,7 +7,10 @@ class Candidate(models.Model):
     second_name = models.CharField(max_length=120, null=True)
 
     def str(self):
-        return self.name + ' ' + self.second_name + ' ' + self.surname
+        if self.second_name is None:
+            return self.name + ' ' + self.surname
+        else:
+            return self.name + ' ' + self.second_name + ' ' + self.surname
 
     def __str__(self):
         return self.str()

@@ -14,7 +14,6 @@ def get_parent(unit):
     except ObjectDoesNotExist:
         return None
 
-""""""
 def get_ancestors(unit):
     anc = [unit]
     while True:
@@ -60,6 +59,8 @@ def get_unit(request, name, typ):
         diagram.append([cand.str(), votes])
 
     template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
+
+    print(votes, candidates)
 
     return render(request, template, {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
                                          'results_pdf' : pdf_file, 'kandydaci':candidates, 'diagram': diagram})
