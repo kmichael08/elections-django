@@ -1,6 +1,6 @@
-from django.test import TestCase, RequestFactory
-from .models import Unit, Subunit, Candidate, Statistics, Result, Information
-from .views import get_parent, get_ancestors, index
+from django.test import TestCase, RequestFactory, Client
+from .models import Unit, Subunit, Candidate, Statistics, Result, Information, update_filename
+from .views import get_parent, get_ancestors, index, django_login
 from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser, User
 
@@ -64,6 +64,11 @@ class TestModels(TestCase):
 
         self.assertEqual(stat.value, 3.123)
 
+    def test_filename(self):
+        unit = Unit(type='województwo', name='kujawsko-pomorskie', short_name='kuj-pom')
+        unit.save()
+        self.assertEqual(update_filename(unit, 'notimportant'), 'województwo_kuj-pom')
+
 class TestViews(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -107,3 +112,34 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Jan Kowalski', count=2)
 
+    def test_template(self):
+        c = Client()
+        self.createData()
+        response = c.post('/polska/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'president/unit.html')
+
+    def test_template_obwod(self):
+        c = Client()
+        unit = Unit(type='obwód', name='Szkoła', short_name='21313')
+        unit.save()
+
+        info = Information(name='Ważne głosy')
+        info.save()
+
+        stat = Statistics(id_information=info, id_unit=unit, value=123)
+        stat.save()
+
+        response=c.post('/polska/obwód/21313/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'president/obwod.html')
+
+    def test_obwod_no_data(self):
+        c = Client()
+        unit = Unit(type='obwód', name='Szkoła', short_name='21313')
+        unit.save()
+        with self.assertRaises(KeyError):
+             c.post('/polska/obwód/21313/')
+
+    def test_search(self):
+        pass

@@ -71,7 +71,6 @@ def get_pdf(request, filename):
     return HttpResponse(pdf_file, content_type='application/pdf')
 
 def django_login(request):
-    print(request.POST)
     username = request.POST['username']
     password = request.POST['password']
     user = authenticate(request, username=username, password=password)
