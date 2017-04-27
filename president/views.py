@@ -84,7 +84,7 @@ def django_login(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect('/polska/')
+    return redirect('/polska/')
 
 def search(request):
     gmina = request.POST['gmina']

@@ -8,7 +8,7 @@ urlpatterns = [
 
     url(r'^login/', views.django_login, name='django_login'),
 
-    url(r'^logout/', views.logout, name='logout'),
+    url(r'^logout/', views.logout_view, name='logout_view'),
 
     url(r'^obwód/(?P<name>[ 0-9A-Zążęćńśół_a-z-]+)/upload_pdf/$', views.upload_pdf, name='upload_pdf'),
 
