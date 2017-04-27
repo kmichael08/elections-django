@@ -33,7 +33,7 @@ def get_unit(request, name, typ):
     stats = [item.value for item in Statistics.objects.filter(id_unit_id=jednostka).order_by('id')]
     ogolne = OrderedDict(zip(rubryki, stats))
     votes = [item.value for item in Result.objects.filter(id_unit_id=jednostka)]
-    percentage = [0] * 12 if ogolne['Ważne głosy'] == 0 else [100 * vot / ogolne['Ważne głosy'] for vot in votes]
+    percentage = [0] * Candidate.objects.count() if ogolne['Ważne głosy'] == 0 else [100 * vot / ogolne['Ważne głosy'] for vot in votes]
     res_dict = zip(candidates, votes, percentage)
 
     subunits = [Unit.objects.get(id=unit.id_subunit_id) for unit in Subunit.objects.filter(id_unit_id=jednostka).order_by('id_subunit__name')]
@@ -55,12 +55,10 @@ def get_unit(request, name, typ):
         pdf_file = ''
 
     diagram = [['kandydat', 'głosy']]
-    for cand, votes, percentage in res_dict:
+    for cand, votes in zip(candidates, votes):
         diagram.append([cand.str(), votes])
 
     template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
-
-    print(votes, candidates)
 
     return render(request, template, {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
                                          'results_pdf' : pdf_file, 'kandydaci':candidates, 'diagram': diagram})
@@ -105,13 +103,10 @@ def upload_pdf(request, name):
         for chunk in pdf_file.chunks():
             destination.write(chunk)
 
-    print(request.path)
     return redirect('/polska/obwód/' + name)
 
 def edit_votes(request, name):
-    print(request.POST)
     cand = request.POST['kandydat']
-    print(cand, name)
     res = Result.objects.get(id_unit__short_name=name, id_cand_id=cand)
     res.value = request.POST['votes']
     res.save()

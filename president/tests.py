@@ -99,12 +99,11 @@ class TestViews(TestCase):
         res = Result(id_unit=unit, id_cand=cand, value=331122)
         res.save()
 
-        print(Unit.objects.all(), Result.objects.all(), Candidate.objects.all())
-
         request = self.factory.get('/polska')
 
         request.user = self.user
 
         response = index(request)
         self.assertEqual(response.status_code, 200)
-        print(response.content)
+        self.assertContains(response, 'Jan Kowalski', count=2)
+
