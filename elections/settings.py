@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'president.apps.PresidentConfig',
     'django_nose',
+    'debug_toolbar',
 ]
+
+INTERNAL_IPS = ('127.0.0.1',)
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
@@ -49,6 +52,7 @@ NOSE_ARGS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
