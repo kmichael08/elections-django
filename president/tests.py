@@ -3,6 +3,7 @@ from .models import Unit, Subunit, Candidate, Statistics, Result, Information, u
 from .views import get_parent, get_ancestors, index, django_login
 from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser, User
+from .forms import SearchGminaForm, LoginForm
 
 class TestAncestor(TestCase):
     def test_parent(self):
@@ -141,5 +142,19 @@ class TestViews(TestCase):
         with self.assertRaises(KeyError):
              c.post('/polska/obwód/21313/')
 
-    def test_search(self):
-        pass
+
+class TestForms(TestCase):
+    def test_search_form(self):
+        search_form = SearchGminaForm({'gmina': 'Szubin'})
+        self.assertTrue(search_form.is_valid())
+
+    def test_search_too_short(self):
+        search_form = SearchGminaForm({'gmina': 'a'})
+        self.assertFalse(search_form.is_valid())
+
+    def test_login(self):
+        login_form = LoginForm({'username': 'jan', 'password': 'kowalski'})
+        self.assertTrue(login_form.is_valid())
+        login_form.save()
+
+

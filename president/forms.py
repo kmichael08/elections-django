@@ -19,4 +19,4 @@ class EditVotesForm(forms.Form):
 class LoginForm(forms.Form):
     username = forms.CharField(min_length=3, max_length=20, label=None,
                                widget=forms.TextInput(attrs={'placeholder': 'Login'}))
-    password = forms.CharField(widget=forms.PasswordInput, min_length=3)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Hasło'}), min_length=3)
