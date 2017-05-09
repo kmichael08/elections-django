@@ -6,6 +6,8 @@ import re
 from collections import OrderedDict
 from elections.settings import MEDIA_ROOT
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
 
 
 def get_parent(unit):
@@ -13,6 +15,7 @@ def get_parent(unit):
         return Unit.objects.get(id=Subunit.objects.get(id_subunit_id=unit).id_unit_id)
     except ObjectDoesNotExist:
         return None
+
 
 def get_ancestors(unit):
     anc = [unit]
@@ -23,6 +26,7 @@ def get_ancestors(unit):
         else:
             anc.append(unit)
     return anc
+
 
 def get_unit(request, name, typ):
     name = re.sub('_', ' ', name)
@@ -60,15 +64,31 @@ def get_unit(request, name, typ):
 
     template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
 
-    return render(request, template, {'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
-                                         'results_pdf' : pdf_file, 'kandydaci':candidates, 'diagram': diagram})
+    if request.method == 'POST':
+        search_form = SearchGminaForm(request.POST)
+        upload_form = UploadFileForm(request.POST)
+        edit_votes_form = EditVotesForm(request.POST)
+        login_form = LoginForm(request.POST)
+    else:
+        search_form = SearchGminaForm()
+        upload_form = UploadFileForm()
+        edit_votes_form = EditVotesForm()
+        login_form = LoginForm()
+
+    return render(request, template, {'search_form': search_form, 'upload_form': upload_form,
+                                      'edit_votes_form': edit_votes_form, 'login_form': login_form,
+                                      'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
+                                      'results_pdf' : pdf_file, 'kandydaci':candidates, 'diagram': diagram})
+
 
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
 
+
 def get_pdf(request, filename):
     pdf_file = open(MEDIA_ROOT + filename, 'rb').read()
     return HttpResponse(pdf_file, content_type='application/pdf')
+
 
 def django_login(request):
     username = request.POST['username']
@@ -80,9 +100,12 @@ def django_login(request):
     else:
         return redirect('/polska/')
 
+
+@login_required(login_url='/polska/')
 def logout_view(request):
     logout(request)
     return redirect('/polska/')
+
 
 def search(request):
     gmina = request.POST['gmina']
@@ -90,6 +113,8 @@ def search(request):
     gminy = Unit.objects.filter(type='gmina', name__contains=gmina)
     return render(request, 'president/lista_gmin.html', {'gminy':gminy, 'success' : successful})
 
+
+@login_required(login_url='/polska/')
 def upload_pdf(request, name):
     # Handle file upload
     pdf_file = request.FILES['pdf_obwod']
@@ -104,6 +129,8 @@ def upload_pdf(request, name):
 
     return redirect('/polska/obwód/' + name)
 
+
+@login_required(login_url='/polska/')
 def edit_votes(request, name):
     cand = request.POST['kandydat']
     res = Result.objects.get(id_unit__short_name=name, id_cand_id=cand)
