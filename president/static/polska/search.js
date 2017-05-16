@@ -42,6 +42,7 @@ function get_gminy(gmina) {
     let url = 'http://127.0.0.1:8000/polska/lista_gmin/';
     let xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
+    let csrftoken = Cookies.get('csrftoken');    xhr.setRequestHeader("X-CSRFToken", csrftoken);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.addEventListener("readystatechange", processRequest, false);
 

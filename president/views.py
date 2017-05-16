@@ -127,7 +127,6 @@ def logout_view(request):
 def search(request):
     return render(request, 'president/lista_gmin.html', {'gmina': request.POST['gmina']})
 
-@csrf_exempt
 def lista_gmin(request):
     gmina = request.POST['gmina']
     gminy = Unit.objects.filter(type='gmina', name__contains=gmina)
