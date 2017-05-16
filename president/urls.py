@@ -18,6 +18,8 @@ urlpatterns = [
 
     url(r'^search/$', views.search, name='search'),
 
+    url(r'^lista_gmin/$', views.lista_gmin, name='lista_gmin'),
+
     # ex: /polska/media/obwód_2608053
     url(r'^media/(?P<filename>[ _ążźśęćńłó0-9A-Za-z-]+)/$', views.get_pdf, name='get_pdf'),
 

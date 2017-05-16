@@ -33,14 +33,6 @@ function fill_stats(response) {
     }
 }
 
-/**
- * Get the full name of the unit.
- * @param ancestor
- * @returns unit full name.
- */
-function unit_name(ancestor) {
-    return ancestor.type + ' ' + ancestor.name;
-}
 
 /**
  * Fill topnav with unit ancestors.

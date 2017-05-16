@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
 from .serializers import UnitSerializer
+from django.views.decorators.csrf import csrf_exempt
 
 
 def get_parent(unit):
@@ -90,8 +91,6 @@ def get_unit_data(request, name, typ):
     for cand, vote in zip(candidates, votes):
         diagram.append([cand.str(), vote])
 
-    print(pdf_file)
-
     content = {'percentage': percentage, 'votes': votes, 'stats': stats,
                 'results_pdf': pdf_file, 'diagram': diagram, 'ancestors': ancestors, 'menu_links': menu_links,
                 'subunits': subunits, 'links': links}
@@ -126,10 +125,14 @@ def logout_view(request):
 
 
 def search(request):
+    return render(request, 'president/lista_gmin.html', {'gmina': request.POST['gmina']})
+
+@csrf_exempt
+def lista_gmin(request):
     gmina = request.POST['gmina']
-    successful = len(gmina) > 2
     gminy = Unit.objects.filter(type='gmina', name__contains=gmina)
-    return render(request, 'president/lista_gmin.html', {'gminy':gminy, 'success' : successful})
+    gminy = [UnitSerializer(gmina).data for gmina in gminy]
+    return JsonResponse({'gminy': gminy})
 
 
 @login_required(login_url='/polska/')

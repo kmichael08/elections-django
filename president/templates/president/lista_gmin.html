@@ -5,19 +5,15 @@
     <title> Wyszukiwarka gmin </title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'polska/style.css' %}" />
+    <script src="{% static 'polska/utils.js' %}" type="application/javascript"></script>
+    <script src="{% static 'polska/search.js' %}" type="application/javascript"> </script>
 
 </head>
-<body>
-{% if gminy and success %}
-    <div class="subunits">
-        <ul>
-            {% for gmina in gminy %}
-                <li><a href=/polska/gmina/{{ gmina.short_name }}> {{ gmina.name }} </a> </li>
-            {% endfor %}
-        </ul>
-    </div>
-{% else %}
-    Brak gmin pasujących do zapytania lub za krótkie zapytanie!
-{% endif %}
+<body onload="get_gminy('{{ gmina }}')">
+<div class="subunits">
+    <ul>
+
+    </ul>
+</div>
 </body>
 </html>
