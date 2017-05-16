@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Result, Candidate, Unit, Information, Statistics, Subunit
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, render, redirect
@@ -8,7 +8,7 @@ from elections.settings import MEDIA_ROOT
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
-
+from .serializers import UnitSerializer
 
 def get_parent(unit):
     try:
@@ -29,38 +29,9 @@ def get_ancestors(unit):
 
 
 def get_unit(request, name, typ):
-    name = re.sub('_', ' ', name)
     candidates = Candidate.objects.all()
-    jednostka = get_object_or_404(Unit, short_name=name, type=typ)
 
     rubryki = Information.objects.values_list('name', flat=True).order_by('id')
-    stats = [item.value for item in Statistics.objects.filter(id_unit_id=jednostka).order_by('id')]
-    ogolne = OrderedDict(zip(rubryki, stats))
-    votes = [item.value for item in Result.objects.filter(id_unit_id=jednostka)]
-    percentage = [0] * Candidate.objects.count() if ogolne['Ważne głosy'] == 0 else [100 * vot / ogolne['Ważne głosy'] for vot in votes]
-    res_dict = zip(candidates, votes, percentage)
-
-    subunits = [Unit.objects.get(id=unit.id_subunit_id) for unit in Subunit.objects.filter(id_unit_id=jednostka).order_by('id_subunit__name')]
-    links = [subunit.type + '/' + subunit.short_name for subunit in subunits]
-    links = [re.sub(' ', '_', item) for item in links]
-    subunits = zip(subunits, links)
-
-    ancestors = get_ancestors(jednostka)
-    ancestors.reverse()
-
-    menu_links = [unit.type + '/' + unit.short_name for unit in ancestors ]
-    menu_links = [re.sub(' ', '_', item) for item in menu_links]
-
-    ancestors = zip(ancestors, menu_links)
-
-    try:
-        pdf_file = jednostka.result_file.url
-    except ValueError:
-        pdf_file = ''
-
-    diagram = [['kandydat', 'głosy']]
-    for cand, votes in zip(candidates, votes):
-        diagram.append([cand.str(), votes])
 
     template = 'president/obwod.html' if typ=='obwód' else 'president/unit.html'
 
@@ -77,8 +48,53 @@ def get_unit(request, name, typ):
 
     return render(request, template, {'search_form': search_form, 'upload_form': upload_form,
                                       'edit_votes_form': edit_votes_form, 'login_form': login_form,
-                                      'res_dict': res_dict, 'ogolne': ogolne, 'subunits': subunits, 'ancestors': ancestors,
-                                      'results_pdf' : pdf_file, 'kandydaci':candidates, 'diagram': diagram})
+                                      'rubryki': rubryki, 'candidates': candidates,
+                                      'typ': typ, 'name': name})
+
+
+def get_unit_data(request, name, typ):
+    name = re.sub('_', ' ', name)
+    candidates = Candidate.objects.all()
+
+    jednostka = get_object_or_404(Unit, short_name=name, type=typ)
+    stats = [item.value for item in Statistics.objects.filter(id_unit_id=jednostka).order_by('id')]
+
+    rubryki = Information.objects.values_list('name', flat=True).order_by('id')
+    ogolne = OrderedDict(zip(rubryki, stats))
+    votes = [item.value for item in Result.objects.filter(id_unit_id=jednostka)]
+    percentage = [0] * Candidate.objects.count() if ogolne['Ważne głosy'] == 0 else [100 * vot / ogolne['Ważne głosy'] for vot in votes]
+
+    subunits = [Unit.objects.get(id=unit.id_subunit_id) for unit in
+                Subunit.objects.filter(id_unit_id=jednostka).order_by('id_subunit__name')]
+
+    links = [subunit.type + '/' + subunit.short_name for subunit in subunits]
+    links = [re.sub(' ', '_', item) for item in links]
+
+    subunits = [UnitSerializer(unit) for unit in subunits]
+
+    subunits = zip(subunits, links)
+
+    ancestors = get_ancestors(jednostka)
+    ancestors.reverse()
+
+    menu_links = [unit.type + '/' + unit.short_name for unit in ancestors]
+    menu_links = [re.sub(' ', '_', item) for item in menu_links]
+
+    ancestors = zip(ancestors, menu_links)
+
+    try:
+        pdf_file = jednostka.result_file.url
+    except ValueError:
+        pdf_file = ''
+
+    diagram = [['kandydat', 'głosy']]
+    for cand, vote in zip(candidates, votes):
+        diagram.append([cand.str(), vote])
+
+    content =  {'percentage': percentage, 'votes': votes, 'stats': stats,
+                                      'results_pdf': pdf_file, 'diagram': diagram}
+
+    return JsonResponse(content)
 
 
 def index(request):

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'president.apps.PresidentConfig',
     'django_nose',
     'debug_toolbar',
+    'rest_framework',
 ]
 
 INTERNAL_IPS = ('127.0.0.1',)

@@ -24,4 +24,7 @@ urlpatterns = [
     # ex: /polska/powiat/nakielski
     url(r'^(?P<typ>[ 0-9A-Zążęćńśół_a-z-]+)/(?P<name>[ _ążźśęćńłó0-9A-Za-z-]+)/$', views.get_unit, name='get_unit'),
 
+    # ex: /polska/data/powiat/nakielski
+    url(r'^data/(?P<typ>[ 0-9A-Zążęćńśół_a-z-]+)/(?P<name>[ _ążźśęćńłó0-9A-Za-z-]+)/$', views.get_unit_data, name='get_unit_data'),
+
 ]

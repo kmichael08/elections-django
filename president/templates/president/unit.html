@@ -10,14 +10,30 @@
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <script type="text/javascript" src="{% static 'polska/results.js' %}"></script>
+
     <script type="text/javascript">
+        let xhr;
+        xhr = new XMLHttpRequest();
+
+        let url = 'http://127.0.0.1:8000/polska/data/' + '{{ typ }}' + '/' + '{{  name }}';
+
+        xhr.open('GET', url, true);
+        xhr.send();
+        xhr.addEventListener("readystatechange", processRequest, false);
+
+    function processRequest(e) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            let response = JSON.parse(xhr.responseText);
+
+
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
 
         var data = google.visualization.arrayToDataTable(
-            {{ diagram|safe }}
+            response.diagram
         );
 
 
@@ -30,10 +46,14 @@
 
         chart.draw(data, options);
       }
+     }
+    }
+
+
     </script>
 
 </head>
-<body>
+<body onload="fill_unit_data('{{ typ }}', '{{ name }}')"  >
     {% if user.is_authenticated %}
         <p> Zalogowany {{ user.username }} <a href="/polska/logout/"> Wyloguj! </a> </p>
     {% endif %}
@@ -85,11 +105,11 @@
                 <th> Liczba głosów</th>
                 <th> Procent głosów </th>
             </tr>
-            {% for cand, votes, per in res_dict %}
+            {% for cand in candidates %}
                 <tr>
                     <td> {{ cand.str }}  </td>
-                    <td> {{ votes }} </td>
-                    <td> {{ per|floatformat:-2 }} </td>
+                    <td> {{ 0 }} </td>
+                    <td> {{ 0|floatformat:-2 }} </td>
                 </tr>
             {% endfor %}
         </table>
@@ -100,16 +120,16 @@
    <div>
         <h2> Ogólne statystyki </h2>
         <table class = "votes">
-            {% for rubryka, wartosc in ogolne.items %}
+            {% for rubryka in rubryki %}
                 {% if rubryka == 'Frekwencja' %}
                     <tr>
                         <td> {{ rubryka }} </td>
-                        <td> {{ wartosc|floatformat:-2 }} </td>
+                        <td> {{ 0|floatformat:-2 }} </td>
                     </tr>
                 {% else %}
                     <tr>
                         <td> {{ rubryka }} </td>
-                        <td> {{ wartosc|floatformat }} </td>
+                        <td> {{ 0|floatformat }} </td>
                     </tr>
                 {% endif %}
             {% endfor %}
