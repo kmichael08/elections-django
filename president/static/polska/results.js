@@ -2,6 +2,10 @@
  * Created by michal on 15.05.17.
  */
 
+/**
+ * Fill votes block.
+ * @param response
+ */
 function fill_votes(response) {
     let votes_items = document.getElementsByClassName('votes')[0];
     let rows = votes_items.getElementsByTagName('tr');
@@ -13,6 +17,10 @@ function fill_votes(response) {
     }
 }
 
+/**
+ * Fill block with stats.
+ * @param response
+ */
 function fill_stats(response) {
     let stats_items = document.getElementsByClassName('votes')[1];
     let rows = stats_items.getElementsByTagName('tr');
@@ -25,18 +33,34 @@ function fill_stats(response) {
     }
 }
 
+/**
+ * Get the full name of the unit.
+ * @param ancestor
+ * @returns unit full name.
+ */
 function unit_name(ancestor) {
     return ancestor.type + ' ' + ancestor.name;
 }
 
+/**
+ * Fill topnav with unit ancestors.
+ * @param response
+ */
 function fill_topnav(response) {
+    document.getElementsByClassName('topnav')[0].innerHTML = '';
     for (let i = 0; i < response.ancestors.length; i++) {
         let link = '/polska/' + response.menu_links[i];
         document.getElementsByClassName('topnav')[0].innerHTML += '<li><a href =' + link + '> ' + unit_name(response.ancestors[i]) + '</a></li>';
     }
 }
 
+/**
+ * Print all subunits into the block.
+ * @param response
+ */
 function fill_subunits(response) {
+    document.getElementsByClassName('subunits')[0].getElementsByTagName('ul')[0].innerHTML = '';
+
     for (let i = 0; i < response.subunits.length; i++) {
         let link = '/polska/' + response.links[i];
         document.getElementsByClassName('subunits')[0].getElementsByTagName('ul')[0].innerHTML +=
@@ -44,6 +68,10 @@ function fill_subunits(response) {
     }
 }
 
+/**
+ * Replace upload form with the link to the uploaded file.
+ * @param response
+ */
 function show_pdf(response) {
 
     if (response.results_pdf != '')
@@ -51,9 +79,29 @@ function show_pdf(response) {
 
     }
 
+/**
+ * Fill all blocks with data.
+ * @param response
+ */
+function fill_all(response) {
+    fill_votes(response);
+    fill_stats(response);
+    fill_topnav(response);
+    fill_subunits(response);
+    show_pdf(response);
+}
 
+/**
+ * Fill the page with unit data.
+ * @param typ
+ * @param short_name
+ */
 function fill_unit_data(typ, short_name) {
     let url = 'http://127.0.0.1:8000/polska/data/' + typ + '/' + short_name;
+
+    let local_response = localStorage.getItem('unit_data');
+    if (local_response != null)
+        fill_all(JSON.parse(local_response));
 
     let xhr;
     xhr = new XMLHttpRequest();
@@ -64,14 +112,10 @@ function fill_unit_data(typ, short_name) {
     function processRequest(e) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             let response = JSON.parse(xhr.responseText);
-            fill_votes(response);
-            fill_stats(response);
-            fill_topnav(response);
-            fill_subunits(response);
-            show_pdf(response);
+            fill_all(response);
+            localStorage.setItem('unit_data', xhr.responseText);
         }
     }
-
 
 
 }
