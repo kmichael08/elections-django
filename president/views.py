@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
 from .serializers import UnitSerializer
 
+
 def get_parent(unit):
     try:
         return Unit.objects.get(id=Subunit.objects.get(id_subunit_id=unit).id_unit_id)
@@ -70,9 +71,7 @@ def get_unit_data(request, name, typ):
     links = [subunit.type + '/' + subunit.short_name for subunit in subunits]
     links = [re.sub(' ', '_', item) for item in links]
 
-    subunits = [UnitSerializer(unit) for unit in subunits]
-
-    subunits = zip(subunits, links)
+    subunits = [UnitSerializer(unit).data for unit in subunits]
 
     ancestors = get_ancestors(jednostka)
     ancestors.reverse()
@@ -80,7 +79,7 @@ def get_unit_data(request, name, typ):
     menu_links = [unit.type + '/' + unit.short_name for unit in ancestors]
     menu_links = [re.sub(' ', '_', item) for item in menu_links]
 
-    ancestors = zip(ancestors, menu_links)
+    ancestors = [UnitSerializer(unit).data for unit in ancestors]
 
     try:
         pdf_file = jednostka.result_file.url
@@ -91,8 +90,11 @@ def get_unit_data(request, name, typ):
     for cand, vote in zip(candidates, votes):
         diagram.append([cand.str(), vote])
 
-    content =  {'percentage': percentage, 'votes': votes, 'stats': stats,
-                                      'results_pdf': pdf_file, 'diagram': diagram}
+    print(pdf_file)
+
+    content = {'percentage': percentage, 'votes': votes, 'stats': stats,
+                'results_pdf': pdf_file, 'diagram': diagram, 'ancestors': ancestors, 'menu_links': menu_links,
+                'subunits': subunits, 'links': links}
 
     return JsonResponse(content)
 

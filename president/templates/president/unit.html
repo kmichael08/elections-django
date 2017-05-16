@@ -80,7 +80,7 @@
         <h2> Logowanie </h2>
         <form action="/polska/login/" method="post">
             {% csrf_token %}
-            {{ login_form.as_p }}
+            login_form.as_p
             <input type="submit" value="Zaloguj!"/>
         </form>
     </div>

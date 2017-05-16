@@ -12,15 +12,8 @@
     </div>
 {% endif %}
 
-{% if results_pdf != '' %}
-    <div>
-    <h2>
-        <a href={{ results_pdf }}> Protokół z wynikami obwodu </a>
-    </h2>
-    </div>
-{% else %}
-    {% if user.is_authenticated %}
-    <div>
+
+    <div id="upload">
         <h2> Zuploaduj plik z wynikami. </h2>
         <form action="upload_pdf/" method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -28,6 +21,5 @@
             <input type="submit" value="Upload"/>
         </form>
     </div>
-    {% endif %}
-{% endif %}
+
 {% endblock %}

@@ -25,6 +25,33 @@ function fill_stats(response) {
     }
 }
 
+function unit_name(ancestor) {
+    return ancestor.type + ' ' + ancestor.name;
+}
+
+function fill_topnav(response) {
+    for (let i = 0; i < response.ancestors.length; i++) {
+        let link = '/polska/' + response.menu_links[i];
+        document.getElementsByClassName('topnav')[0].innerHTML += '<li><a href =' + link + '> ' + unit_name(response.ancestors[i]) + '</a></li>';
+    }
+}
+
+function fill_subunits(response) {
+    for (let i = 0; i < response.subunits.length; i++) {
+        let link = '/polska/' + response.links[i];
+        document.getElementsByClassName('subunits')[0].getElementsByTagName('ul')[0].innerHTML +=
+            '<li><a href=' + link + '> ' + unit_name(response.subunits[i]) + '</a></li>';
+    }
+}
+
+function show_pdf(response) {
+
+    if (response.results_pdf != '')
+        document.getElementById('upload').innerHTML = '<h2> <a href=' + response.results_pdf + '> Protokół z wynikami obwodu </a> </h2>'
+
+    }
+
+
 function fill_unit_data(typ, short_name) {
     let url = 'http://127.0.0.1:8000/polska/data/' + typ + '/' + short_name;
 
@@ -39,7 +66,9 @@ function fill_unit_data(typ, short_name) {
             let response = JSON.parse(xhr.responseText);
             fill_votes(response);
             fill_stats(response);
-
+            fill_topnav(response);
+            fill_subunits(response);
+            show_pdf(response);
         }
     }
 

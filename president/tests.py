@@ -96,23 +96,6 @@ class TestViews(TestCase):
         response = index(request)
         self.assertEqual(response.status_code, 200)
 
-    def test_index2(self):
-        unit = self.createData()
-
-        cand = Candidate(name='Jan', surname='Kowalski')
-        cand.save()
-
-        res = Result(id_unit=unit, id_cand=cand, value=331122)
-        res.save()
-
-        request = self.factory.get('/polska')
-
-        request.user = self.user
-
-        response = index(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Jan Kowalski', count=2)
-
     def test_template(self):
         c = Client()
         self.createData()

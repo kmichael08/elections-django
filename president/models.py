@@ -38,6 +38,9 @@ class Result(models.Model):
     def __str__(self):
         return Unit.objects.get(id=self.id_unit_id).__str__() + ', ' + Candidate.objects.get(id=self.id_cand_id).__str__()
 
+    def str(self):
+        return self.__str__()
+
 class Statistics(models.Model):
     id_information = models.ForeignKey(Information)
     id_unit = models.ForeignKey(Unit)
