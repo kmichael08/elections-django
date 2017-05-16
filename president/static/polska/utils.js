@@ -1,12 +1,9 @@
 /**
- * Created by michal on 16.05.17.
- */
-
-/**
  * Get the full name of the unit.
  * @param ancestor
- * @returns unit full name.
+ * @returns {string} full name of the unit.
  */
 function unit_name(ancestor) {
+    "use strict";
     return ancestor.type + ' ' + ancestor.name;
 }

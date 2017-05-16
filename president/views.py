@@ -93,7 +93,7 @@ def get_unit_data(request, name, typ):
 
     content = {'percentage': percentage, 'votes': votes, 'stats': stats,
                 'results_pdf': pdf_file, 'diagram': diagram, 'ancestors': ancestors, 'menu_links': menu_links,
-                'subunits': subunits, 'links': links}
+                'subunits': subunits, 'links': links, 'is_obwod': typ == 'obwód'}
 
     return JsonResponse(content)
 
@@ -113,15 +113,15 @@ def django_login(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return redirect('/polska/')
+        return redirect(request.META['HTTP_REFERER'])
     else:
-        return redirect('/polska/')
+        return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required(login_url='/polska/')
 def logout_view(request):
     logout(request)
-    return redirect('/polska/')
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def search(request):
@@ -135,7 +135,7 @@ def lista_gmin(request):
     return JsonResponse({'gminy': gminy})
 
 
-@login_required(login_url='/polska/')
+@login_required(login_url='/polska')
 def upload_pdf(request, name):
     # Handle file upload
     pdf_file = request.FILES['pdf_obwod']

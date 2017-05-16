@@ -1,12 +1,10 @@
-/**
- * Created by michal on 16.05.17.
- */
 
 /**
  * Write all gminy included in the response
- * @param response
+ * @param gminy
  */
 function write_gminy(gminy) {
+    "use strict";
     let div_gmin = document.getElementsByClassName('subunits')[0];
 
      if (gminy.length === 0) {
@@ -34,9 +32,11 @@ function write_gminy(gminy) {
  * @param gmina
  */
 function get_gminy(gmina) {
+    "use strict";
     let local_response = localStorage.getItem('lista_gmin');
-    if (local_response != null)
+    if (local_response !== null) {
         write_gminy(JSON.parse(local_response));
+    }
 
 
     let url = 'http://127.0.0.1:8000/polska/lista_gmin/';
@@ -45,8 +45,8 @@ function get_gminy(gmina) {
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.addEventListener("readystatechange", processRequest, false);
 
-    function processRequest(e) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
+    function processRequest() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
 
             write_gminy(response.gminy);

@@ -7,6 +7,7 @@
  * @param response
  */
 function fill_votes(response) {
+    "use strict";
     let votes_items = document.getElementsByClassName('votes')[0];
     let rows = votes_items.getElementsByTagName('tr');
 
@@ -22,14 +23,17 @@ function fill_votes(response) {
  * @param response
  */
 function fill_stats(response) {
+    "use strict";
     let stats_items = document.getElementsByClassName('votes')[1];
     let rows = stats_items.getElementsByTagName('tr');
     for (let i = 0; i < rows.length; i++) {
         let columns = rows[i].getElementsByTagName('td');
-        if (rows.length - i > 1)
+        if (rows.length - i > 1) {
             columns[1].innerText = response.stats[i];
-        else
+        }
+        else {
             columns[1].innerText = response.stats[i].toFixed(2);
+        }
     }
 }
 
@@ -39,6 +43,7 @@ function fill_stats(response) {
  * @param response
  */
 function fill_topnav(response) {
+    "use strict";
     document.getElementsByClassName('topnav')[0].innerHTML = '';
     for (let i = 0; i < response.ancestors.length; i++) {
         let link = '/polska/' + response.menu_links[i];
@@ -51,6 +56,7 @@ function fill_topnav(response) {
  * @param response
  */
 function fill_subunits(response) {
+    "use strict";
     document.getElementsByClassName('subunits')[0].getElementsByTagName('ul')[0].innerHTML = '';
 
     for (let i = 0; i < response.subunits.length; i++) {
@@ -65,17 +71,24 @@ function fill_subunits(response) {
  * @param response
  */
 function show_pdf(response) {
-
-    if (response.results_pdf != '')
-        document.getElementById('upload').innerHTML = '<h2> <a href=' + response.results_pdf + '> Protokół z wynikami obwodu </a> </h2>'
+    "use strict";
+    if (response.results_pdf !== '' && response.is_obwod === true) {
+        document.getElementById('pdf_file').innerHTML = '<h2> <a href=' + response.results_pdf + '> Protokół z wynikami obwodu </a> </h2>';
+        }
+    else if (response.is_obwod === true)
+    {
+        document.getElementById('pdf_file').innerHTML = '';
+    }
 
     }
+
 
 /**
  * Fill all blocks with data.
  * @param response
  */
 function fill_all(response) {
+    "use strict";
     fill_votes(response);
     fill_stats(response);
     fill_topnav(response);
@@ -89,11 +102,19 @@ function fill_all(response) {
  * @param short_name
  */
 function fill_unit_data(typ, short_name) {
+    "use strict";
+
+    let key = 'unit_data';
+    if (typ === 'obwód') {
+        key = 'obwod_data';
+    }
+
     let url = 'http://127.0.0.1:8000/polska/data/' + typ + '/' + short_name;
 
-    let local_response = localStorage.getItem('unit_data');
-    if (local_response != null)
+    let local_response = localStorage.getItem(key);
+    if (local_response !== null) {
         fill_all(JSON.parse(local_response));
+    }
 
     let xhr;
     xhr = new XMLHttpRequest();
@@ -101,11 +122,11 @@ function fill_unit_data(typ, short_name) {
     xhr.send();
     xhr.addEventListener("readystatechange", processRequest, false);
 
-    function processRequest(e) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
+    function processRequest() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             fill_all(response);
-            localStorage.setItem('unit_data', xhr.responseText);
+            localStorage.setItem(key, xhr.responseText);
         }
     }
 

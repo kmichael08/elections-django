@@ -15,8 +15,7 @@
     <script type="text/javascript" src="{% static 'polska/results.js' %}"></script>
 
     <script type="text/javascript">
-        let xhr;
-        xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         let url = 'http://127.0.0.1:8000/polska/data/' + '{{ typ }}' + '/' + '{{  name }}';
 
@@ -24,32 +23,32 @@
         xhr.send();
         xhr.addEventListener("readystatechange", processRequest, false);
 
-    function processRequest(e) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            let response = JSON.parse(xhr.responseText);
+        function processRequest() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let response = JSON.parse(xhr.responseText);
 
 
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+          google.charts.load('current', {'packages':['corechart']});
+          google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
+          function drawChart() {
 
-        var data = google.visualization.arrayToDataTable(
-            response.diagram
-        );
+            let data = google.visualization.arrayToDataTable(
+                response.diagram
+            );
 
 
-        var options = {
-          title: 'Wyniki wyborów',
-          sliceVisibilityThreshold: .0
-        };
+            let options = {
+              title: 'Wyniki wyborów',
+              sliceVisibilityThreshold: .0
+            };
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            let chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
-        chart.draw(data, options);
-      }
-     }
-    }
+            chart.draw(data, options);
+          }
+         }
+        }
 
 
     </script>
@@ -82,7 +81,8 @@
         <h2> Logowanie </h2>
         <form action="/polska/login/" method="post">
             {% csrf_token %}
-            login_form.as_p
+            {{ login_form.as_p }}
+
             <input type="submit" value="Zaloguj!"/>
         </form>
     </div>
