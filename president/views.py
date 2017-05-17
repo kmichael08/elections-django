@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
 from .serializers import UnitSerializer
-
+from django.views.decorators.csrf import csrf_exempt
 
 def get_parent(unit):
     try:
@@ -147,11 +147,13 @@ def upload_pdf(request, name):
     return redirect('/polska/obwód/' + name)
 
 
-@login_required(login_url='/polska/')
-def edit_votes(request, name):
-    cand = request.POST['kandydat']
+@csrf_exempt
+def edit_votes_dynamic(request, name):
+    print(request.POST)
+    cand = request.POST["kandydat"]
+    votes = request.POST['votes']
     res = Result.objects.get(id_unit__short_name=name, id_cand_id=cand)
-    res.value = request.POST['votes']
+    res.value = votes
     res.save()
-    return redirect('/polska/obwód/' + name)
+    return JsonResponse({'name': name})
 

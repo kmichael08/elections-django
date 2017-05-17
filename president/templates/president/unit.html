@@ -10,46 +10,31 @@
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <script type="application/javascript">
+        let xhr = new XMLHttpRequest();
+        let url = 'http://127.0.0.1:8000/polska/data/' + '{{ typ }}' + '/' + '{{  name }}';
+        xhr.open('GET', url, true);
+        xhr.send();
+        xhr.addEventListener("readystatechange", processRequest, false);
+        function processRequest() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let response = JSON.parse(xhr.responseText);
+          }
+         }
+
+
+
+    </script>
+
     <script type="text/javascript" src="{% static 'polska/utils.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'polska/results.js' %}"></script>
 
+    {% block importy %}
+
+    {% endblock %}
+
     <script type="text/javascript">
-        let xhr = new XMLHttpRequest();
-
-        let url = 'http://127.0.0.1:8000/polska/data/' + '{{ typ }}' + '/' + '{{  name }}';
-
-        xhr.open('GET', url, true);
-        xhr.send();
-        xhr.addEventListener("readystatechange", processRequest, false);
-
-        function processRequest() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                let response = JSON.parse(xhr.responseText);
-
-
-          google.charts.load('current', {'packages':['corechart']});
-          google.charts.setOnLoadCallback(drawChart);
-
-          function drawChart() {
-
-            let data = google.visualization.arrayToDataTable(
-                response.diagram
-            );
-
-
-            let options = {
-              title: 'Wyniki wyborów',
-              sliceVisibilityThreshold: .0
-            };
-
-            let chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-            chart.draw(data, options);
-          }
-         }
-        }
-
 
     </script>
 

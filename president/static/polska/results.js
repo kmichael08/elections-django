@@ -103,12 +103,10 @@ function fill_all(response) {
  */
 function fill_unit_data(typ, short_name) {
     "use strict";
-
     let key = 'unit_data';
     if (typ === 'obwód') {
         key = 'obwod_data';
     }
-
     let url = 'http://127.0.0.1:8000/polska/data/' + typ + '/' + short_name;
 
     let local_response = localStorage.getItem(key);
@@ -126,9 +124,28 @@ function fill_unit_data(typ, short_name) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             fill_all(response);
-            localStorage.setItem(key, xhr.responseText);
+            document.getElementById('id_votes').value = 0;
+
+            google.charts.load('current', {'packages': ['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+            function drawChart() {
+                let data = google.visualization.arrayToDataTable(
+                    response.diagram
+                );
+                let options = {
+                    title: 'Wyniki wyborów',
+                    sliceVisibilityThreshold: .0
+                };
+                let chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                chart.draw(data, options);
+
+                localStorage.setItem(key, xhr.responseText);
+            }
         }
     }
+
+
+
 
 
 }

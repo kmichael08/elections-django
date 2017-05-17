@@ -1,13 +1,17 @@
 {% extends "president/unit.html" %}
-{% block pdfwyniki %}
+{% block importy %}
+    {% load static %}
+    <script type="text/javascript" src="{% static 'polska/edit_votes.js' %}"></script>
+{% endblock %}
 
+{% block pdfwyniki %}
 {% if user.is_authenticated %}
     <div>
         <h2> Edytuj liczbę głosów </h2>
-        <form action="edit_votes/" method="post">
+        <form id="editing" onsubmit="processForm('{{ name }}'); return false;" method="post">
             {% csrf_token %}
             {{ edit_votes_form.as_p }}
-            <input type="submit" value="Zmien"/>
+            <button type="submit"> Zmień </button>
         </form>
     </div>
 {% endif %}
