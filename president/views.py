@@ -9,7 +9,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
 from .serializers import UnitSerializer
-from django.views.decorators.csrf import csrf_exempt
 
 
 def get_parent(unit):
@@ -113,9 +112,7 @@ def django_login(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return redirect(request.META['HTTP_REFERER'])
-    else:
-        return redirect(request.META['HTTP_REFERER'])
+    return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required(login_url='/polska/')
