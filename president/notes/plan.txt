@@ -1,0 +1,4 @@
+-upload file without reloading page
+-change edit_votes to PUT
+-django messages
+-errors serving
