@@ -7,6 +7,11 @@ function write_gminy(gminy) {
     "use strict";
     let div_gmin = document.getElementsByClassName('subunits')[0];
 
+    if (div_gmin === null) {
+        console.log('No div for subunits');
+        return;
+    }
+
      if (gminy.length === 0) {
          div_gmin.innerHTML = '';
         return;
@@ -17,6 +22,10 @@ function write_gminy(gminy) {
 
     let lista_gmin = div_gmin.getElementsByTagName('ul')[0];
 
+    if (lista_gmin === null) {
+        console.log('No list for gminy');
+        return;
+    }
 
     for (let i = 0; i < gminy.length; i++) {
         let gmina = gminy[i];
