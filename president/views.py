@@ -10,6 +10,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import SearchGminaForm, UploadFileForm, EditVotesForm, LoginForm
 from .serializers import UnitSerializer
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.contrib import messages
+
 
 def get_parent(unit):
     try:
@@ -29,6 +32,7 @@ def get_ancestors(unit):
     return anc
 
 
+@require_http_methods(["GET", "POST"])
 def get_unit(request, name, typ):
     candidates = Candidate.objects.all()
 
@@ -53,6 +57,7 @@ def get_unit(request, name, typ):
                                       'typ': typ, 'name': name})
 
 
+@require_GET
 def get_unit_data(request, name, typ):
     name = re.sub('_', ' ', name)
     candidates = Candidate.objects.all()
@@ -97,6 +102,7 @@ def get_unit_data(request, name, typ):
     return JsonResponse(content)
 
 
+@require_http_methods(["GET", "POST"])
 def index(request):
     return get_unit(request, 'Polska', 'kraj')
 
@@ -106,6 +112,7 @@ def get_pdf(request, filename):
     return HttpResponse(pdf_file, content_type='application/pdf')
 
 
+@require_POST
 def django_login(request):
     username = request.POST['username']
     password = request.POST['password']
@@ -121,9 +128,12 @@ def logout_view(request):
     return redirect(request.META['HTTP_REFERER'])
 
 
+@require_POST
 def search(request):
     return render(request, 'president/lista_gmin.html', {'gmina': request.POST['gmina']})
 
+
+@require_POST
 def lista_gmin(request):
     gmina = request.POST['gmina']
     gminy = Unit.objects.filter(type='gmina', name__contains=gmina)
@@ -131,12 +141,13 @@ def lista_gmin(request):
     return JsonResponse({'gminy': gminy})
 
 
+@require_POST
 @login_required(login_url='/polska')
 def upload_pdf(request, name):
     # Handle file upload
     pdf_file = request.FILES['pdf_obwod']
 
-    unit = Unit.objects.get(type='obwód', short_name=name)
+    unit = get_object_or_404(Unit, type='obwód', short_name=name)
     unit.result_file='obwód_' + name
     unit.save()
 
@@ -147,11 +158,12 @@ def upload_pdf(request, name):
     return redirect('/polska/obwód/' + name)
 
 
+@require_POST
 @login_required(login_url='/polska')
 def edit_votes_dynamic(request, name):
-    cand = request.POST["kandydat"]
+    cand = request.POST['kandydat']
     votes = request.POST['votes']
-    res = Result.objects.get(id_unit__short_name=name, id_cand_id=cand)
+    res = get_object_or_404(Result, id_unit__short_name=name, id_cand_id=cand)
     res.value = votes
     res.save()
     return JsonResponse({'name': name})
