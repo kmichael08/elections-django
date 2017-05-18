@@ -124,7 +124,10 @@ function fill_unit_data(typ, short_name) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
             fill_all(response);
-            document.getElementById('id_votes').value = 0;
+
+            let votes_form = document.getElementById('id_votes');
+            if (votes_form !== null)
+                votes_form.value = 0;
 
             google.charts.load('current', {'packages': ['corechart']});
             google.charts.setOnLoadCallback(drawChart);

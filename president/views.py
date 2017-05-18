@@ -147,9 +147,8 @@ def upload_pdf(request, name):
     return redirect('/polska/obwód/' + name)
 
 
-@csrf_exempt
+@login_required(login_url='/polska')
 def edit_votes_dynamic(request, name):
-    print(request.POST)
     cand = request.POST["kandydat"]
     votes = request.POST['votes']
     res = Result.objects.get(id_unit__short_name=name, id_cand_id=cand)
