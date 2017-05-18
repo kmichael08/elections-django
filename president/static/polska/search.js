@@ -8,7 +8,6 @@ function write_gminy(gminy) {
     let div_gmin = document.getElementsByClassName('subunits')[0];
 
      if (gminy.length === 0) {
-        div_gmin.innerHTML = '<p> Brak gmin pasujących do zapytania </p>';
         return;
     }
     else {

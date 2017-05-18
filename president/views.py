@@ -34,6 +34,9 @@ def get_ancestors(unit):
 
 @require_http_methods(["GET", "POST"])
 def get_unit(request, name, typ):
+    name = re.sub('_', ' ', name)
+    get_object_or_404(Unit, short_name=name, type=typ)
+
     candidates = Candidate.objects.all()
 
     rubryki = Information.objects.values_list('name', flat=True).order_by('id')
@@ -130,7 +133,10 @@ def logout_view(request):
 
 @require_POST
 def search(request):
-    return render(request, 'president/lista_gmin.html', {'gmina': request.POST['gmina']})
+    gmina = request.POST['gmina']
+    if len(Unit.objects.filter(type='gmina', name__contains=gmina)) == 0:
+        messages.error(request, 'Nie ma gminy, której nazwa zawiera %s!' % gmina)
+    return render(request, 'president/lista_gmin.html', {'gmina': request.POST['gmina'], 'back': request.META['HTTP_REFERER']})
 
 
 @require_POST
