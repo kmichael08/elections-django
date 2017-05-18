@@ -1,0 +1,4 @@
+-redis for websockets
+-webpack for packing js scripts
+-uglify js
+-gunicorn
