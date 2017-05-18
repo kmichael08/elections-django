@@ -97,6 +97,29 @@ function fill_all(response) {
 }
 
 /**
+ * Display results as a pie chart.
+ * @param diagram headers and results list for the pie chart.
+ */
+function display_pie_chart(diagram) {
+    "use strict";
+    google.charts.load('current', {'packages': ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        let data = google.visualization.arrayToDataTable(
+            diagram
+        );
+        let options = {
+            title: 'Wyniki wyborów',
+            sliceVisibilityThreshold: .0
+        };
+        let chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(data, options);
+
+    }
+}
+
+
+/**
  * Fill the page with unit data.
  * @param typ
  * @param short_name
@@ -126,29 +149,15 @@ function fill_unit_data(typ, short_name) {
             fill_all(response);
 
             let votes_form = document.getElementById('id_votes');
-            if (votes_form !== null)
+            if (votes_form !== null) {
                 votes_form.value = 0;
-
-            google.charts.load('current', {'packages': ['corechart']});
-            google.charts.setOnLoadCallback(drawChart);
-            function drawChart() {
-                let data = google.visualization.arrayToDataTable(
-                    response.diagram
-                );
-                let options = {
-                    title: 'Wyniki wyborów',
-                    sliceVisibilityThreshold: .0
-                };
-                let chart = new google.visualization.PieChart(document.getElementById('piechart'));
-                chart.draw(data, options);
-
-                localStorage.setItem(key, xhr.responseText);
             }
+
+            display_pie_chart(response.diagram);
+
+            localStorage.setItem(key, xhr.responseText);
         }
     }
-
-
-
 
 
 }

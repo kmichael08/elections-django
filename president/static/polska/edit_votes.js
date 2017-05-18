@@ -22,11 +22,7 @@ function processForm(short_name) {
         }
     }
 
-    //xhr.send(JSON.stringify({votes: votes, kandydat: cand}));
     xhr.send('votes=' + votes +'&' + 'kandydat=' + cand);
-    /* do what you want with the form */
-
-    // You must return false to prevent the default form behavior
     return false;
 }
 

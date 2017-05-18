@@ -8,6 +8,7 @@ function write_gminy(gminy) {
     let div_gmin = document.getElementsByClassName('subunits')[0];
 
      if (gminy.length === 0) {
+         div_gmin.innerHTML = '';
         return;
     }
     else {
@@ -41,18 +42,19 @@ function get_gminy(gmina) {
     let url = 'http://127.0.0.1:8000/polska/lista_gmin/';
     let xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
-    let csrftoken = Cookies.get('csrftoken');    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    let csrftoken = Cookies.get('csrftoken');
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.addEventListener("readystatechange", processRequest, false);
 
     function processRequest() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let response = JSON.parse(xhr.responseText);
-
             write_gminy(response.gminy);
 
             localStorage.setItem('lista_gmin', xhr.responseText);
         }
+
     }
 
     xhr.send('gmina=' + gmina);
