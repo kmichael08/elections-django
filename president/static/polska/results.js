@@ -130,6 +130,9 @@ function fill_unit_data(typ, short_name) {
     if (typ === 'obwód') {
         key = 'obwod_data';
     }
+
+    key += '_' + 'typ' + '_' + short_name;
+
     let url = 'http://127.0.0.1:8000/polska/data/' + typ + '/' + short_name;
 
     let local_response = localStorage.getItem(key);
