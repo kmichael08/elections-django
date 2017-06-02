@@ -31,7 +31,9 @@ def upload_file_test(driver):
         pdf_file = pdf_upload_form.find_element_by_id('id_pdf_obwod')
         pdf_file.send_keys('/home/michal/PycharmProjects/elections/president/selenium_tests/siatka.pdf')
         submit_button.click()
-        assert(driver.find_elements_by_partial_link_text('Protokół'))
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, 'Protokół'))
+        )
 
 
 if __name__ == "__main__":

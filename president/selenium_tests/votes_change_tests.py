@@ -6,6 +6,9 @@ from time import sleep
 from president.selenium_tests.login_tests import good_login_test
 DISPLAY_BROWSER = True
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 
 def is_logged(driver):
     try:
@@ -25,7 +28,9 @@ def negative_votes_test(driver):
             print('Logging in failed')
     try:
         initial_value = driver.find_element_by_xpath('(//table[@class="votes"]//tr)/td[2]')
-        edit_form = driver.find_element_by_id('editing')
+        edit_form = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'editing'))
+        )
         votes = edit_form.find_element_by_id('id_votes')
         votes.clear()
         votes.send_keys(-1)
@@ -54,7 +59,9 @@ def proper_votes_test(driver, votes_value):
         except Exception:
             print('Logging in failed')
     try:
-        edit_form = driver.find_element_by_id('editing')
+        edit_form = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'editing'))
+        )
         votes = edit_form.find_element_by_id('id_votes')
         votes.clear()
         votes.send_keys(votes_value)
@@ -92,7 +99,9 @@ def make_korwin_win_test(driver, votes_value):
         except Exception:
             print('Logging in failed')
     try:
-        edit_form = driver.find_element_by_id('editing')
+        edit_form = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'editing'))
+        )
         votes = edit_form.find_element_by_id('id_votes')
         votes.clear()
         votes.send_keys(votes_value)
