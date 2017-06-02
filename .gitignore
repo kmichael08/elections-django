@@ -4,3 +4,4 @@ __pycache__/
 media/
 .coverage
 president/selenium_tests/geckodriver*
+/president/selenium_tests/credentials.py
