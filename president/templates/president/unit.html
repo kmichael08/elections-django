@@ -56,10 +56,10 @@
 
     <div>
         <h2> Wyszukiwarka gmin </h2>
-        <form action="/polska/search/"  method="post">
+        <form action="/polska/search/"  id="search-form" method="post">
             {% csrf_token %}
             {{ search_form.as_p }}
-            <input type="submit" value="Wyszukaj!"/>
+            <input name="search-submit" type="submit" value="Wyszukaj!"/>
         </form>
     </div>
 
