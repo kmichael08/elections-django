@@ -11,7 +11,7 @@
         <form id="editing" onsubmit="processForm('{{ name }}'); return false;" method="post">
             {% csrf_token %}
             {{ edit_votes_form.as_p }}
-            <button type="submit"> Zmień </button>
+            <button id="submit-edit" type="submit"> Zmień </button>
         </form>
     </div>
 {% endif %}
