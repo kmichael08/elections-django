@@ -3,4 +3,4 @@
 __pycache__/
 media/
 .coverage
-president/selenium_tests/geckodriver.log
+president/selenium_tests/geckodriver*
