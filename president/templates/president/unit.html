@@ -43,7 +43,7 @@
 </head>
 <body onload="fill_unit_data('{{ typ }}', '{{ name }}')"  >
     {% if user.is_authenticated %}
-        <p> Zalogowany {{ user.username }} <a href="/polska/logout/"> Wyloguj! </a> </p>
+        <p id="logged_user"> Zalogowany {{ user.username }} <a href="/polska/logout/"> Wyloguj! </a> </p>
     {% endif %}
 
     <div>
@@ -66,11 +66,11 @@
     {% if not user.is_authenticated %}
     <div>
         <h2> Logowanie </h2>
-        <form action="/polska/login/" method="post">
+        <form name="login-form" action="/polska/login/" method="post">
             {% csrf_token %}
             {{ login_form.as_p }}
 
-            <input type="submit" value="Zaloguj!"/>
+            <input name="log-in" type="submit" value="Zaloguj!"/>
         </form>
     </div>
     {% endif %}
