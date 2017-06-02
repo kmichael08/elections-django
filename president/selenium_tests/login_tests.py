@@ -32,9 +32,8 @@ def false_login_test(driver):
         print('Page not found')
 
 
-def good_login_test(driver):
+def good_login_test(page, driver):
     try:
-        page = 'http://127.0.0.1:8000/polska/województwo/podkarpackie'
         driver.get(page)
         login_form = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.NAME, 'login-form'))
@@ -64,8 +63,8 @@ def good_login_test(driver):
     return driver
 
 
-def log_out_test(driver):
-    driver = good_login_test(driver)
+def log_out_test(page, driver):
+    driver = good_login_test(page, driver)
     try:
         logged = driver.find_element_by_id('logged_user')
         logged.find_element_by_tag_name('a').click()
@@ -87,14 +86,16 @@ if __name__ == "__main__":
         display = Display(visible=0, size=(800, 600))
         display.start()
 
+    page = 'http://127.0.0.1:8000/polska/województwo/podkarpackie'
+
     driver = webdriver.Firefox(executable_path='/home/michal/PycharmProjects/elections/president/selenium_tests/geckodriver')
 
     false_login_test(driver)
-    good_login_test(driver)
+    good_login_test(page, driver)
     driver.quit()
 
     driver = webdriver.Firefox(executable_path='/home/michal/PycharmProjects/elections/president/selenium_tests/geckodriver')
-    log_out_test(driver)
+    log_out_test(page, driver)
 
     sleep(3)
     driver.quit()
