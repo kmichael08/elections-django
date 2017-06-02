@@ -1,12 +1,9 @@
 from selenium import webdriver
 from pyvirtualdisplay import Display
 from selenium.common.exceptions import WebDriverException, NoSuchElementException
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from president.selenium_tests.login_tests import good_login_test
-from president.selenium_tests.credentials import username as page_username, password as page_password
 DISPLAY_BROWSER = True
 from selenium.webdriver.support.ui import Select
 
@@ -130,7 +127,7 @@ if __name__ == "__main__":
     make_korwin_win_test(driver, 1000000)
     make_korwin_win_test(driver, 1000000000)
 
-    sleep(10)
+    sleep(4)
     driver.quit()
 
     if not DISPLAY_BROWSER:
